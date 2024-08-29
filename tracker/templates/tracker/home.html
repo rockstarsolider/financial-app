@@ -1,6 +1,8 @@
 {% extends 'base.html' %}  
 
 {% block content %}  
+
+{% if user.is_authenticated %}
 <main >
   <div class="relative isolate overflow-hidden pt-16">
 
@@ -28,17 +30,19 @@
   </div>
 
   <div class="py-8 px-8 flex items-center w-full justify-center gap-8">
-    <div class="card bg-base-100 w-96 shadow-xl">
-      <div class="card-body">
+    <div class="card w-96">
+      <div class="card-body flex justify-center items-start">
         <h2 class="card-title">لیست تراکنش ها</h2>
         <p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است</p>
-        <div class="card-actions justify-end">
+        <div class="card-actions justify-center">
           <button class="btn btn-neutral">نمودار ها</button>
-          <button class="btn btn-primary">تراکنش ها</button>
+          <a href="{% url 'transactions' %}" class="btn btn-primary">تراکنش ها</a>
         </div>
       </div>
     </div>
   </div>
 </main>
-
+{% else %}
+  <p class="text-lg font-medium w-full text-center pt-20">برای دیدن تراکنش ها ابتدا وارد شوید</p>
+{% endif %}
 {% endblock %}  
