@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base{
+    @font-face {
+        font-family: 'ModamVF';
+        src: url('../fonts/ModamVF.woff2') format('woff2 supports variations'),
+             url('../fonts/ModamVF.woff2') format('woff2-variations');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'IRANSansXV';
+        src: url('../fonts/IRANSansXV.woff2') format('woff2 supports variations'),
+             url('../fonts/IRANSansXV.woff2') format('woff2-variations');
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+    }
+    
+    html {
+        font-family: 'IRANSansXV', sans-serif;
+        -moz-font-feature-settings: "ss01";
+        -webkit-font-feature-settings: "ss01";
+        font-feature-settings: "ss01";
+    }
+}

@@ -9,6 +9,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout  
 from django.shortcuts import redirect 
 from django.views import View
+from django.shortcuts import render
+from custom_translate.templatetags.persian_calendar_convertor import convert_to_persian_calendar, format_persian_datetime
 
 class RegisterView(generic.CreateView):  
     form_class = CustomUserCreationForm  
@@ -35,4 +37,13 @@ class CustomLogoutView(View):
         logout(request)  # Log the user out  
         return redirect('logout_confirm')  # Redirect to the custom logout confirmation page 
     
-# class Home()
+@method_decorator(login_required, name='dispatch')
+class HomeView(View):
+    template_name = 'tracker/home.html'
+    def get(self, request, *args, **kwargs):
+        user = user = request.user
+        context = {
+            'user': user,
+            'joined': format_persian_datetime(convert_to_persian_calendar(user.date_joined)),
+        }
+        return render(request, self.template_name, context)

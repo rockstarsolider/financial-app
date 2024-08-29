@@ -1,13 +1,13 @@
 {% extends 'base.html' %}  
 
-{% block title %}Logged Out - My App{% endblock %}  
-
-{% block content %}  
-<div class="max-w-md mx-auto bg-white p-8 rounded shadow-md text-center mt-10">  
-    <h1 class="text-2xl font-bold mb-4">You have been logged out</h1>  
-    <p class="mb-6">Thank you for visiting our site</p>  
-    <div class="flex justify-center">  
-        <a href="{% url 'login' %}" class="bg-blue-500 text-white p-3 rounded hover:bg-blue-700">Login again</a>  
-    </div>  
-</div>  
+{% block content %}
+<div class='pt-40'>
+    <div class="max-w-lg mx-auto bg-white p-8 rounded-2xl shadow-md text-center">  
+        <h1 class="text-2xl font-bold mb-4">شما با موفقیت از حساب خود خارج شدید</h1>  
+        <p class="mb-6">بابت بازدید از وبسایت  متشکریم</p>  
+        <div class="flex justify-center">  
+            <a href="{% url 'login' %}" class="btn btn-primary">ورود دوباره</a>  
+        </div>  
+    </div> 
+</div> 
 {% endblock %}  
