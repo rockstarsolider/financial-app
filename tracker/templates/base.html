@@ -18,8 +18,11 @@
     })
     </script>
 </head>
-<body dir='rtl' style='background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);min-height: 100vh;'>
-    {% include "components/header.html" %}
+<body 
+    dir='rtl' style='background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);min-height: 100vh;'
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+    >
+    {% include "partial/header.html" %}
     {% block content %}
     
     {% endblock  %}

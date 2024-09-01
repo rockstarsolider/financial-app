@@ -1,35 +1,16 @@
 {% extends 'base.html' %}  
-{% load jformat %}
 {% block head_title %}
     تراکنش ها
 {% endblock %}
 
 {% block content %} 
-{% if transactions %}
-<h2 class="w-full pt-24 text-center text-2xl font-medium">تراکنش ها</h2>
-<div class="w-full flex items-center justify-center pt-20 overflow-x-auto">
-    <table class="table md:w-[50%] ">
-        <thead class="text-xs uppercase">
-            <tr class="border-b border-gray-500">
-                <th class="px-6 py-3">تاریخ:</th>
-                <th class="px-6 py-3">دسته بندی:</th>
-                <th class="px-6 py-3">نوع:</th>
-                <th class="px-6 py-3">مقدار:</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for transaction in transactions %}
-                <tr class="border-t border-gray-500">
-                    <td>{{transaction.persian_date}}</td>
-                    <td>{{transaction.category}}</td>
-                    <td>{{transaction.type}}</td>
-                    <td>{{transaction.amount}}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+{% if filter.qs %}
+<div id="transaction-block">
+    {% include 'partial/transactions_countainer.html' %}
 </div>
 {% else %}
 <h2 class="w-full pt-24 text-center text-xl font-medium">تراکنشی موجود نیست</h2>
 {% endif %}
+
 {% endblock %}  

@@ -1,0 +1,20 @@
+{% extends 'base.html' %} 
+{% load widget_tweaks %}
+
+{% block content %}  
+    <form id="create-transaction" hx-post="{% url 'update-transaction' transaction.pk %}" class="w-full flex flex-col justify-center pt-5 items-center gap-4">  
+        <h2 class="pt-32 font-medium text-lg">اضافه کردن تراکنش</h2>  
+        {% include 'partial/transaction_form.html' %}
+        <div>
+            <button type="submit" class="btn btn-primary mt-4">ثبت تراکنش</button> 
+            <button 
+                hx-get="{% url 'transactions' %}" 
+                hx-target="#create-transaction" 
+                hx-swap="innerHTML" 
+                hx-push-url="{% url 'transactions' %}"
+                class="btn btn-error">
+                لغو تراکنش
+            </button>
+        </div> 
+    </form>  
+{% endblock %}

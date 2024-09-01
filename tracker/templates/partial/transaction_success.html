@@ -1,0 +1,17 @@
+<div role="alert" class="alert alert-success w-96 mt-40">
+    {{message}}
+</div>
+
+<div class="mt-8">
+    <button hx-get="{% url 'create-transaction' %}" hx-target="#create-transaction" class="btn btn-primary">
+        اضافه کردن یک تراکنش دیگر
+    </button>
+    <button 
+        hx-get="{% url 'transactions' %}" 
+        hx-target="#create-transaction" 
+        hx-swap="innerHTML" 
+        hx-push-url="{% url 'transactions' %}"
+        class="btn btn-neutral">
+        لیست تراکنش ها
+    </button>
+</div>

@@ -1,0 +1,21 @@
+{% load widget_tweaks %}
+
+<div class="form-control mb-2 w-96">
+    {{ form.type|add_label_class:'label' }}
+    {% render_field form.type class='input' %}
+</div>
+<div class="form-control mb-2 w-96">
+    {{ form.amount|add_label_class:'label' }}
+    {% render_field form.amount class='input' %}
+
+    {% for error in form.amount.errors %}
+        <p class="text-red-400 mt-1">{{error}}</p>
+    {% endfor %}
+</div>
+<div class="form-control mb-2 w-96">
+    {{ form.date|add_label_class:'label' }}
+    {% render_field form.date class='input' %}
+</div>
+<div class="form-control mb-2 w-96">
+    {% render_field form.category class='rounded border-gray-300 focus:ring-gray-900' %}
+</div>

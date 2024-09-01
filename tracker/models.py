@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.core.validators import MaxValueValidator
-from custom_translate.templatetags.persian_calendar_convertor import convert_to_persian_calendar, format_persian_datetime
+from custom_translate.templatetags.persian_calendar_convertor import convert_to_persian_calendar, format_persian_date, format_persian_datetime, convert_to_persian_calendar_date
+from .managers import TransactionQuerySet
 
 class CustomUserManager(BaseUserManager):  
     def create_user(self, email, password=None, **extra_fields):  
@@ -38,15 +39,25 @@ class Category(models.Model):
 class Transaction(models.Model):
     TRANSACTION_TYPE_CHOICES = (
         ('income', 'درآمد'),
-        ('expense', 'خرج'),
+        ('expense', 'هزینه'),
     )
-    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    type = models.CharField(max_length=8, choices=TRANSACTION_TYPE_CHOICES)
-    amount = models.IntegerField( validators=[MaxValueValidator(999999999999)])
-    date = models.DateTimeField()
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,verbose_name='کاربر')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE,verbose_name='دسته بندی')
+    type = models.CharField(max_length=8, choices=TRANSACTION_TYPE_CHOICES,verbose_name='نوع')
+    amount = models.IntegerField( validators=[MaxValueValidator(999999999999)],verbose_name='مقدار')
+    date = models.DateField(verbose_name='تاریخ')
+    objects = TransactionQuerySet.as_manager()
+
     def __str__(self):
         return f"user: {self.user} - on: {self.date}"
+    
     @property
     def persian_date(self):
-        return format_persian_datetime(convert_to_persian_calendar(self.date))
+        return format_persian_date(convert_to_persian_calendar_date(self.date))
+    
+    @property
+    def formated_amount(self):
+        return f'تومان {self.amount:,}'
+    
+    class Meta:
+        ordering = ['-date']
