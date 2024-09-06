@@ -3,7 +3,7 @@
 {% block content %}  
 
 {% if user.is_authenticated %}
-<main >
+<main id="home">
   <div class="relative isolate overflow-hidden pt-16">
 
     <!-- Stats -->
@@ -11,7 +11,7 @@
       <dl class="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:px-2 xl:px-0">
         <div class="flex items-baseline flex-wrap justify-between gap-y-2 gap-x-4 border-t border-gray-900/5 px-4 py-4 sm:px-6 lg:border-t-0 xl:px-8 sm:border-l">
           <dt class="text-sm font-medium leading-6 text-gray-500">عضویت از</dt>
-          <dd class="w-full flex-none text-lg font-medium leading-10 tracking-tight text-gray-900">{{joined}}</dd>
+          <dd class="w-full flex-none text-lg font-medium leading-10 tracking-tight text-gray-900">{{user.persian_date_joined}}</dd>
         </div>
         <div class="flex items-baseline flex-wrap justify-between gap-y-2 gap-x-4 border-t border-gray-900/5 px-4 py-4 sm:px-6 lg:border-t-0 xl:px-8">
           <dt class="text-sm font-medium leading-6 text-gray-500">نام</dt>
@@ -51,7 +51,10 @@
     </div>
   </div>
 </main>
+  
+{% include 'partial/toast.html' %} 
+
 {% else %}
-  <p class="text-lg font-medium w-full text-center pt-20">برای دیدن تراکنش ها ابتدا وارد شوید</p>
+  <p class="text-lg font-medium w-full text-center pt-20 ">برای دیدن تراکنش ها ابتدا وارد شوید</p>
 {% endif %}
 {% endblock %}  

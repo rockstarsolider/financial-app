@@ -17,7 +17,7 @@
         event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
     </script>
-    <script src="{% static 'js/plotly-2.35.0.min.js' %}" charset="utf-8"></script>
+    <!-- <script src="{% static 'js/plotly-2.35.0.min.js' %}" charset="utf-8"></script> -->
 </head>
 <body 
     dir='rtl' style='background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);min-height: 100vh;'
@@ -28,4 +28,5 @@
     
     {% endblock  %}
 </body>
+<script src="{% static 'js/alpinejs.min.js' %}" charset="utf-8"></script>
 </html>

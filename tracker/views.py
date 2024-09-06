@@ -1,13 +1,10 @@
-from django.urls import reverse_lazy  
-from django.views import generic  
-from django.contrib.auth import login
+from django.urls import reverse_lazy, reverse
+from django.views import generic, View
+from django.contrib.auth import login,logout  
 from .forms import CustomUserCreationForm, TransactionForm
-from django.contrib.auth import logout  
-from django.shortcuts import redirect 
-from django.views import View
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.http import require_http_methods
-from django.shortcuts import render, get_object_or_404
-from custom_translate.templatetags.persian_calendar_convertor import convert_to_persian_calendar, format_persian_datetime
 from django.contrib.auth.mixins import LoginRequiredMixin  
 from .models import Transaction
 from .filters import TransactionFilter
@@ -17,16 +14,29 @@ from django.conf import settings
 from tracker.charting import income_expense_chart, category_chart
 from .resources import TransactionResource
 from django.http import HttpResponse
+from django.contrib import messages
 
 class RegisterView(generic.CreateView):  
     form_class = CustomUserCreationForm  
     template_name = 'registration/register.html'  
-    success_url = reverse_lazy('login')  
+    success_url = reverse_lazy('login') 
 
     def form_valid(self, form):  
         user = form.save()  
         login(self.request, user)
         return super().form_valid(form)
+    
+class CustomLoginView(LoginView):  
+    template_name = 'registration/login.html'
+
+    def form_valid(self, form):  
+        user = form.get_user()  
+        login(self.request, user)  
+        message = 'کاربر عزیز خوش آمدید'
+        if user.first_name:
+            message = f'{user.first_name} عزیز خوش آمدی '
+        messages.success(self.request, message)  
+        return render(self.request, 'tracker/home.html')
     
 class CustomLogoutView(View):  
     def get(self, request, *args, **kwargs):  
@@ -35,10 +45,7 @@ class CustomLogoutView(View):
     
 class HomeView(View):
     def get(self, request, *args, **kwargs):
-        context = {}
-        if request.user.is_authenticated:
-            context.update({'joined':format_persian_datetime(convert_to_persian_calendar(request.user.date_joined))})
-        return render(request, 'tracker/home.html', context)
+        return render(request, 'tracker/home.html', {})
     
 class TransactionsList(LoginRequiredMixin,View):
     def get(self, request):

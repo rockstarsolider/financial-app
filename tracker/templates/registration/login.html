@@ -2,11 +2,12 @@
 
 {% block title %}Login - My App{% endblock %}  
 
-{% block content %}
+{% block content %}  
 <div class='pt-40'>  
     <div class="max-w-sm mx-auto p-8 rounded-xl shadow-md bg-white">  
         <h1 class="text-2xl font-bold mb-6 text-center">ورود</h1>  
-        <form method="post">  
+        
+        <form method="post" hx-post="{% url 'login' %}" hx-target="body" hx-swap="innerHTML" hx-push-url="{% url 'home' %}">
             {% csrf_token %}  
             <div class="mb-4">  
                 <label class="block text-sm font-medium mb-2" for="id_email">ایمیل:</label>  
@@ -17,11 +18,11 @@
                 <input dir='ltr' class="border rounded p-2 w-full" type="password" name="password" id="id_password" required>  
             </div>  
             <button class="btn btn-primary w-80" type="submit">ورود</button>  
-        </form>
-        <div class='w-full h-[1px] bg-black rounded-xl my-4'></div>
+        </form>  
+        <div class='w-full h-[1px] bg-black rounded-xl my-4'></div>  
         <div class="flex justify-center">  
             <a href="{% url 'register' %}" class="btn btn-neutral w-80">ثبت نام</a>  
-        </div>
+        </div>  
     </div>  
-</div>
-{% endblock %}  
+</div>  
+{% endblock %}
