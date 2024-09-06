@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django_jalali',
     'django_filters',
     'widget_tweaks',
+    'template_partials',
+    'import_export'
 ]
 
 MIDDLEWARE = [
@@ -156,3 +158,5 @@ SITE_ID = 1
 LOGIN_URL = 'login'
 
 LOGIN_REDIRECT_URL = 'home'
+
+PAGE_SIZE = 5

@@ -1,0 +1,42 @@
+{% load widget_tweaks %}
+
+<div id="charts-container" class="w-full flex flex-col md:grid grid-cols-4 gap-10 justify-items-center md:pt-10 px-[5%] md:px-[10%] overflow-x-auto">  
+    <form 
+        hx-get="{% url 'transactions-charts' %}" 
+        hx-target="#charts-container"
+        hx-swap="outerHTML"
+        hx-indicator="#spinner"
+        class="col-span-1 flex flex-col w-full pt-12"
+        id="filterform">
+
+        <div class="mb-4 form-control">  
+            {{ filter.form.transaction_type|add_label_class:"label " }}  
+            {% render_field filter.form.transaction_type class='select bg-gray-50 text-gray-900' %}  
+        </div>  
+
+        <div class="mb-4 form-control">  
+            {{ filter.form.start_date|add_label_class:"label " }}  
+            {% render_field filter.form.start_date class='input bg-gray-50 text-gray-900' %}  
+        </div>  
+
+        <div class="mb-4 form-control">  
+            {{ filter.form.end_date|add_label_class:"label " }}  
+            {% render_field filter.form.end_date class='input bg-gray-50 text-gray-900' %}  
+        </div>  
+
+        <div class="mb-4 form-control">  
+            {% render_field filter.form.category class='rounded border-gray-300 focus:ring-gray-900' %}  
+        </div>  
+
+        <button  class="btn btn-primary w-20">فیلتر</button>  
+        <span id="spinner" class="loading loading-dots loading-lg htmx-indicator mt-2"></span>
+    </form>  
+
+    <div class="col-span-3 w-full pt-14">
+        {{income_expense_bar|safe}}
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+            {{category_income_pie|safe}}
+            {{category_expense_pie|safe}}
+        </div>
+    </div>
+</div>

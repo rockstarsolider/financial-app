@@ -1,0 +1,16 @@
+<div class="w-full flex flex-col pt-32 justify-center items-center" >
+    <div role="alert" class="alert alert-success w-96">
+        {{message}}
+    </div>
+
+    <div class="mt-4">
+        <button 
+            hx-get="{% url 'transactions' %}"
+            hx-target="#transaction-block" 
+            hx-swap="innerHTML" 
+            hx-push-url="{% url 'transactions' %}"
+            class="btn btn-neutral">
+            لیست تراکنش ها
+        </button>
+    </div>
+</div>

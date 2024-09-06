@@ -1,12 +1,13 @@
 {% load widget_tweaks %}
+{% load partials %}
 
-<h2 class="w-full pt-24 text-center text-2xl font-medium">تراکنش ها</h2>
-<div id="transaction-container" class="w-full flex flex-col md:grid grid-cols-4 gap-10 justify-items-center pt-4 md:pt-10 px-[5%] md:px-[10%] overflow-x-auto">  
+<div id="transaction-container" class="w-full flex flex-col md:grid grid-cols-4 gap-10 justify-items-center md:pt-10 px-[5%] md:px-[10%] overflow-x-auto">  
     <form 
         hx-get="{% url 'transactions' %}" 
         hx-target="#transaction-container"
         hx-swap="outerHTML"
-        class="col-span-1 flex flex-col w-full">
+        class="col-span-1 flex flex-col w-full pt-12"
+        id="filterform">
 
         <div class="mb-4 form-control">  
             {{ filter.form.transaction_type|add_label_class:"label " }}  
@@ -27,14 +28,16 @@
             {% render_field filter.form.category class='rounded border-gray-300 focus:ring-gray-900' %}  
         </div>  
 
-        <button class="btn btn-neutral w-20">فیلتر</button>  
+        <button class="btn btn-primary w-20">فیلتر</button>  
+        <span id="spinner" class="loading loading-dots loading-lg htmx-indicator mt-2"></span>
     </form>  
 
-    <div class="col-span-3 w-full">
+    <div class="col-span-3 w-full pt-14">
         <h3 class="mb-2 text-lg font-medium">آمار کلی</h3>
         <table class="table">
             <thead class="text-xs uppercase">
                 <tr class="border-gray-500">
+                    <th>تعداد تراکنش ها</th>
                     <th>کل درآمد</th>
                     <th>کل مخارج</th>
                     <th>کل درآمد خالص</th>
@@ -42,6 +45,7 @@
             </thead>
             <tbody>
                 <tr class="border-gray-500">
+                    <td>{{count}}</td>
                     <td>{{total_income}}</td>
                     <td>{{total_expenses}}</td>
                     <td>{{net_income}}</td>
@@ -50,11 +54,18 @@
         </table>
         <div class="flex justify-between items-center w-full">
             <h3 class=" mt-14 mb-2 text-lg font-medium">لیست تراکنش ها</h3>
-            <a hx-get="{% url 'create-transaction' %}" hx-push-url="true" hx-target="#transaction-block" class="cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 -mb-8 curser-pointer">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>   
-            </a>                     
+            <div class="flex gap-3 -mb-6">
+                <a hx-get="{% url 'create-transaction' %}" hx-push-url="true" hx-target="#transaction-block" class="cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 -mb-8 curser-pointer">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>   
+                </a>                     
+                <a hx-get="{% url 'export' %}" hx-include="#filterform" class="cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>                  
+                </a>                     
+            </div>
         </div>
         <table class="table w-full"> 
             <thead class="text-xs uppercase">  
@@ -67,26 +78,49 @@
                 </tr>  
             </thead>  
             <tbody>  
-                {% for transaction in filter.qs %}  
-                    <tr class="border-t border-gray-500">  
-                        <td>{{transaction.persian_date}}</td>  
-                        <td>{{transaction.category}}</td>  
-                        <td>{{transaction.get_type_display}}</td>  
-                        <td>{{transaction.formated_amount}}</td>  
-                        <td class="flex gap-2 items-center">
-                            <a hx-get="{% url 'update-transaction' transaction.pk %}" hx-push-url="true" hx-target="#transaction-block" class="cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                </svg>
-                            </a>
-                            <a class="cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                            </a>                              
-                        </td>  
-                    </tr>  
-                {% endfor %}  
+                {% partialdef transaction_list inline=True %}
+                    {% for transaction in transactions %}  
+                    {% if forloop.last and transactions.has_next %}
+                        <tr
+                            hx-get="{% url 'get-transactions' %}?page={{transactions.next_page_number}}" 
+                            hx-trigger="revealed"
+                            hx-swap="afterend"
+                            hx-include="#filterform"
+                            hx-indicator="#spinner"
+                            class="border-t border-gray-500 even:bg-[#edeff0]"
+                        >
+                    {% else %}
+                        <tr class="border-t border-gray-500 even:bg-[#edeff0]">
+                    {% endif %}
+                            <td>{{transaction.persian_date}}</td>  
+                            <td>{{transaction.category}}</td>  
+                            <td>{{transaction.get_type_display}}</td>  
+                            <td>{{transaction.formated_amount}}</td>  
+                            <td class="flex gap-2 items-center">
+                                <a 
+                                    hx-get="{% url 'update-transaction' transaction.pk %}" 
+                                    hx-push-url="true" 
+                                    hx-target="#transaction-block" 
+                                    class="cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                    </svg>
+                                </a>
+                                <a 
+                                    hx-delete="{% url 'delete-transaction' transaction.pk %}" 
+                                    hx-target="#transaction-block" 
+                                    hx-confirm="؟آیا مطمعنید که میخواهید تراکنش را حذف کنید"
+                                    hx-push-url="true" 
+                                    class="cursor-pointer"
+                                    >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </a>                              
+                            </td>  
+                        </tr>  
+                    {% endfor %}  
+                {% endpartialdef %}
             </tbody>  
         </table>  
     </div>

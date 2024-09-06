@@ -1,0 +1,15 @@
+{% extends 'base.html' %}  
+{% block head_title %}
+    نمودار ها    
+{% endblock %}
+
+{% block content %} 
+{% if filter %}
+<div id="transaction-block">
+    {% include 'partial/charts_container.html' %}
+</div>
+{% else %}
+<h2 class="w-full pt-24 text-center text-xl font-medium">تراکنشی موجود نیست</h2>
+{% endif %}
+
+{% endblock %}  

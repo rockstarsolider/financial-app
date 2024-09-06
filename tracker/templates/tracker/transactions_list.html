@@ -4,8 +4,7 @@
 {% endblock %}
 
 {% block content %} 
-
-{% if filter.qs %}
+{% if transactions %}
 <div id="transaction-block">
     {% include 'partial/transactions_countainer.html' %}
 </div>
