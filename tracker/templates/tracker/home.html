@@ -22,8 +22,8 @@
           <dd class="w-full flex-none text-lg font-medium leading-10 tracking-tight text-gray-900">{{user.email}}</dd>
         </div>
         <div class="flex items-baseline flex-wrap justify-between gap-y-2 gap-x-4 border-t border-gray-900/5 px-4 py-4 sm:px-6 lg:border-t-0 xl:px-8 sm:border-l">
-          <dt class="text-sm font-medium leading-6 text-gray-500"></dt>
-          <dd class="w-full flex-none text-lg font-medium leading-10 tracking-tight text-gray-900"></dd>
+          <dt class="text-sm font-medium leading-6 text-gray-500">خروج از حساب کاربری</dt>
+          <dd class="w-full flex-none"><button hx-get="{% url 'logout' %}" hx-target="body" hx-push-url="true" class="btn btn-error btn-md">خروج</button></dd>
         </div>
       </dl>
     </div>

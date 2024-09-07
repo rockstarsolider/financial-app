@@ -11,22 +11,50 @@
     </title>
     {% tailwind_css %}
 
-    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    <!-- HTMX -->
+    <!-- <script src="{% static 'js/htmx.min.js' %}" defer></script> -->
+    <script src="https://unpkg.com/htmx.org@1.9.3"></script>
     <script>
       document.body.addEventListener('htmx:configRequest', (event) => {
         event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
     })
     </script>
-    <!-- <script src="{% static 'js/plotly-2.35.0.min.js' %}" charset="utf-8"></script> -->
+
+    <!-- Web Socket extention for htmx -->
+    <script src="https://unpkg.com/htmx.org@1.9.3/dist/ext/ws.js"></script>
+
+    <!-- Alpine.js -->
+    <script defer src="{% static 'js/alpinejs.min.js' %}" charset="utf-8"></script>
 </head>
 <body 
+    hx-ext="ws" 
+    ws-connect="/ws/notifications/"
     dir='rtl' style='background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);min-height: 100vh;'
-    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-    >
+    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
     {% include "partial/header.html" %}
+
     {% block content %}
-    
     {% endblock  %}
+    <script>
+        let numberSpan = document.getElementById('notifications-number')
+        let clearButton = document.getElementById('clear')
+
+        document.body.addEventListener('htmx:wsAfterMessage', (e) => {
+            let numberOfNotifs = numberSpan.innerHTML;
+            if (!numberOfNotifs){
+                numberSpan.innerHTML = 1;
+            } else {
+                numberSpan.innerHTML = parseInt(numberOfNotifs) +1
+            }
+        })
+
+        clearButton.addEventListener('click',(e) => {
+            let dropdown = document.getElementById('notification-dropdown')
+            let notifs = dropdown.querySelectorAll('div')
+            notifs.forEach(notif => notif.remove())
+            numberSpan.innerHTML = ''
+        })
+    </script>
 </body>
-<script src="{% static 'js/alpinejs.min.js' %}" charset="utf-8"></script>
 </html>

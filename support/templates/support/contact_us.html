@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<form hx-post="{% url 'contact-us' %}" hx-target="body" hx-push-url="{% url 'home' %}" class="pt-28 w-full flex flex-col justify-center items-center"> 
+    <p class="mb-2 text-lg font-medium">ارتباط با ما</p> 
+    <div class="form-control mb-4 w-96">
+        {{ form.title|add_label_class:'label' }}
+        {% render_field form.title class='input input-md input-bordered' %}
+    </div>
+    <div class="form-control mb-4 w-96">
+        {{ form.text|add_label_class:'label' }}
+        {% render_field form.text class='textarea textarea-bordered max-h-64' %}
+    </div>
+    <button class="btn btn-primary w-28">ارسال</button>
+</form>  
+
+{% include 'partial/toast.html' %} 
+
+{% endblock %}

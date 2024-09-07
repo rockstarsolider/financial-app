@@ -15,24 +15,34 @@ class CustomUserCreationForm(forms.ModelForm):
             user.save()  
         return user  
     
-class TransactionForm(forms.ModelForm):
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.all(),
-        widget = forms.RadioSelect(),
-    )
-    def clean_amount(self):
-        amount = self.cleaned_data['amount']
-        if amount <= 0:
-            raise forms.ValidationError("مقدار باید یک عدد مثبت باشد")
-        return amount
-    class Meta:
-        model = Transaction
-        fields = (
-            'type',
-            'amount',
-            'date',
-            'category',
-        )
-        widgets = {
-            'date': forms.DateInput(attrs={'type':'date'}),
-        }
+class TransactionForm(forms.ModelForm):  
+    category = forms.ModelChoiceField(  
+        queryset=Category.objects.all(),  
+        widget=forms.RadioSelect(),  
+        required=False  # Making this optional since we're allowing new category input  
+    )  
+    new_category = forms.CharField(  
+        max_length=15,  
+        required=False,  # Optional field for adding a new category  
+        label='Add New Category',  
+        widget=forms.TextInput(attrs={'placeholder': 'دسته بندی جدید'})  
+    )  
+
+    def clean_amount(self):  
+        amount = self.cleaned_data['amount']  
+        if amount <= 0:  
+            raise forms.ValidationError("مقدار باید یک عدد مثبت باشد")  
+        return amount  
+
+    class Meta:  
+        model = Transaction  
+        fields = (  
+            'type',  
+            'amount',  
+            'date',  
+            'category',  
+            'new_category',
+        )  
+        widgets = {  
+            'date': forms.DateInput(attrs={'type': 'date'}),  
+        }  

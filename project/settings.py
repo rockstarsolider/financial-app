@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     'tracker',
+    'support',
 
     'tailwind',
     'theme',
@@ -50,7 +52,8 @@ INSTALLED_APPS = [
     'django_filters',
     'widget_tweaks',
     'template_partials',
-    'import_export'
+    'import_export',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -159,4 +162,10 @@ LOGIN_URL = 'login'
 
 LOGIN_REDIRECT_URL = 'home'
 
-PAGE_SIZE = 5
+ASGI_APPLICATION = 'project.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}

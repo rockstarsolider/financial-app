@@ -1,16 +1,13 @@
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views import generic, View
 from django.contrib.auth import login,logout  
 from .forms import CustomUserCreationForm, TransactionForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render, get_object_or_404
-from django.views.decorators.http import require_http_methods
 from django.contrib.auth.mixins import LoginRequiredMixin  
-from .models import Transaction
+from .models import Transaction, Category
 from .filters import TransactionFilter
-from django_htmx.http import retarget
 from django.core.paginator import Paginator
-from django.conf import settings
 from tracker.charting import income_expense_chart, category_chart
 from .resources import TransactionResource
 from django.http import HttpResponse
@@ -47,90 +44,78 @@ class HomeView(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'tracker/home.html', {})
     
-class TransactionsList(LoginRequiredMixin,View):
-    def get(self, request):
-        transactions_filter = TransactionFilter(
-            request.GET,
-            queryset=Transaction.objects.filter(user=request.user)
-        )
-        paginator = Paginator(transactions_filter.qs, settings.PAGE_SIZE)
-        transaction_page = paginator.page(1)
-        total_income = transactions_filter.qs.getTotalIncome()
-        total_expenses = transactions_filter.qs.getTotalExpenses()
-        net_income = transactions_filter.qs.getNetIncome()
-        context = {
-            'count':transactions_filter.qs.count(),
-            'transactions':transaction_page,
-            'filter':transactions_filter,
-            'total_income':total_income, 
-            'total_expenses':total_expenses, 
-            'net_income': net_income
-        }
-        if request.htmx:
-            return render(request, 'partial/transactions_countainer.html', context)
-        return render(request, 'tracker/transactions_list.html', context)
+class TransactionView(LoginRequiredMixin, View):  
+    def get(self, request, pk=None):  
+        if pk:  # updating or viewing a transaction  
+            transaction = get_object_or_404(Transaction, pk=pk, user=request.user)  
+            form = TransactionForm(instance=transaction)  
+            context = {'form': form, 'transaction': transaction}  
+            return render(request, 'partial/update_transaction.html', context)  
+
+        # listing transactions  
+        transactions_filter = TransactionFilter(request.GET, queryset=Transaction.objects.filter(user=request.user))  
+        paginator = Paginator(transactions_filter.qs, 5)  
+        transaction_page = paginator.page(1)  
+        context = {  
+            'count': transactions_filter.qs.count(),  
+            'transactions': transaction_page,  
+            'filter': transactions_filter,  
+            'total_income': transactions_filter.qs.getTotalIncome(),  
+            'total_expenses': transactions_filter.qs.getTotalExpenses(),  
+            'net_income': transactions_filter.qs.getNetIncome()  
+        }  
+        if request.htmx:  
+            return render(request, 'partial/transactions_countainer.html', context)  
+        return render(request, 'tracker/transactions_list.html', context)  
+
+    def post(self, request, pk=None):  # Update transaction  
+        transaction = get_object_or_404(Transaction, pk=pk, user=request.user)  
+        form = TransactionForm(request.POST, instance=transaction)  
+        if form.is_valid():  
+            new_category_name = form.cleaned_data.get('new_category')  
+            if new_category_name:  
+                category, created = Category.objects.get_or_create(name=new_category_name)  
+                form.instance.category = category
+            transaction = form.save(commit=False)  
+            transaction.user = request.user  
+            transaction.save()  
+            context = {'message': 'تراکنش با موفقیت تغییر کرد !'}  
+            return render(request, 'partial/delete_success.html', context)  
+        else:  
+            context = {'form': form}  
+            return render(request, 'partial/create_transaction.html', context)  
+
+    def delete(self, request, pk):  
+        transaction = get_object_or_404(Transaction, pk=pk, user=request.user)  
+        transaction.delete()  
+        context = {'message': 'تراکنش با موفقیت حذف شد!'}  
+        return render(request, 'partial/delete_success.html', context)  
     
-class TransactionView(LoginRequiredMixin,View):
-    def get(self, request, pk=None):
-        context = {'form':TransactionForm()}
+def CreateTransaction(request):
+    form = TransactionForm(request.POST)
+    if form.is_valid():
+        new_category_name = form.cleaned_data.get('new_category')  
+        if new_category_name:  
+            category, created = Category.objects.get_or_create(name=new_category_name)  
+            form.instance.category = category
+        transaction = form.save(commit=False)
+        transaction.user = request.user
+        transaction.save()
+        context = {'message':'تراکنش با موفقیت اضافه شد! '}
+        return render(request, 'partial/transaction_success.html', context)
+    else:
+        context = {'form':form}
         return render(request, 'partial/create_transaction.html', context)
-    def post(self, request):
-        form = TransactionForm(request.POST)
-        if form.is_valid():
-            transaction = form.save(commit=False)
-            transaction.user = request.user
-            transaction.save()
-            context = {'message':'تراکنش با موفقیت اضافه شد! '}
-            return render(request, 'partial/transaction_success.html', context)
-        else:
-            context = {'form':form}
-            return render(request, 'partial/create_transaction.html', context)
-
-def UpdateTransaction(request, pk):
-    transaction = get_object_or_404(Transaction, pk=pk)
-    if request.method == 'POST':
-        form = TransactionForm(request.POST, instance=transaction)
-        if form.is_valid():
-            transaction = form.save()
-            transaction.save()
-            context = {'message':'تراکنش با موفقیت ویرایش شد! '}
-            return render(request, 'partial/transaction_success.html', context)
-        else:
-            context = {
-                'form':form,
-                'transaction': transaction
-            }
-            response = render(request, 'partial/update_transaction.html',context)
-            return retarget(response, '#transaction-block')
-
-    context = {
-        'form':TransactionForm(instance=transaction),
-        'transaction': transaction
-    }
-    return render(request, 'partial/update_transaction.html',context)
-
-@require_http_methods(['DELETE'])
-def DeleteTransaction(request, pk):
-    transaction = get_object_or_404(Transaction, pk=pk, user=request.user)
-    transaction.delete()
-    context = {'message':'تراکنش با موفقیت حذف شد!'}
-    return render(request, 'partial/delete_success.html', context)
 
 def GetTransactions(request):
     page = request.GET.get('page', 1)
-    transactions_filter = TransactionFilter(
-        request.GET,
-        queryset=Transaction.objects.filter(user=request.user)
-    )
-    paginator = Paginator(transactions_filter.qs, settings.PAGE_SIZE)
+    transactions_filter = TransactionFilter(request.GET, queryset=Transaction.objects.filter(user=request.user))
+    paginator = Paginator(transactions_filter.qs, 5)
     context = {'transactions':paginator.page(page)}
     return render(request, 'partial/transactions_countainer.html#transaction_list', context)
 
 def TransactionsCharts(request):
-    transactions_filter = TransactionFilter(
-        request.GET,
-        queryset=Transaction.objects.filter(user=request.user).select_related('category')
-    )
+    transactions_filter = TransactionFilter(request.GET, queryset=Transaction.objects.filter(user=request.user).select_related('category'))
     income_expense_bar = income_expense_chart(transactions_filter.qs)
     category_income_pie = category_chart(transactions_filter.qs.filter(type='income'), 'درآمد بر اساس دسته بندی')
     category_expense_pie = category_chart(transactions_filter.qs.filter(type='expense'), 'مخارج بر اساس دسته بندی')
@@ -147,10 +132,7 @@ def TransactionsCharts(request):
 def Export(request):
     if request.htmx:
         return HttpResponse(headers={'HX-Redirect':request.get_full_path()})
-    transactions_filter = TransactionFilter(
-        request.GET,
-        queryset=Transaction.objects.filter(user=request.user).select_related('category')
-    )
+    transactions_filter = TransactionFilter(request.GET, queryset=Transaction.objects.filter(user=request.user).select_related('category'))
     data = TransactionResource().export(transactions_filter.qs)
     response = HttpResponse(data.json)
     response['Content-Diposition'] = 'attachment; filename="transactions.json"'

@@ -2,8 +2,8 @@
 {% load widget_tweaks %}
 
 {% block content %}  
-    <form id="create-transaction" hx-post="{% url 'update-transaction' transaction.pk %}" class="w-full flex flex-col justify-center pt-5 items-center gap-4">  
-        <h2 class="pt-20 font-medium text-lg">ویرایش تراکنش</h2>  
+    <form id="create-transaction" hx-post="{% url 'update-transaction' transaction.pk %}" class="w-full flex flex-col justify-center items-center gap-4">  
+        <h2 class="pt-24 font-medium text-lg">ویرایش تراکنش</h2>  
         {% include 'partial/transaction_form.html' %}
         <div>
             <button type="submit" class="btn btn-primary mt-4">ویرایش</button> 
