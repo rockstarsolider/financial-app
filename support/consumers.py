@@ -25,3 +25,14 @@ class NotificationConsumer(WebsocketConsumer):
             context={'text': event['text']}
         )
         self.send(text_data=html)
+    
+    def new_announcement(self, event):  
+        html = get_template('partial/notification.html').render(  
+            context={
+                'title': event['title'],
+                'text': event['text'],
+                'persian_date': event['persian_date'],
+                'pk': event['pk'],
+            }  
+        )  
+        self.send(text_data=html)

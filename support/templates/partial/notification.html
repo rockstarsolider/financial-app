@@ -1,5 +1,15 @@
 <div id="notification-dropdown" hx-swap-oob="afterbegin">
-    <div class="bg-blue-100 rounded-lg py-5 px-6 mb-3 text-base text-blue-700 inline-flex items-center w-full" role="alert">
-        {{ text }}
+    <div onclick="document.getElementById('announcement-{{ id }}').showModal()" class="bg-blue-100 cursor-pointer rounded-lg py-5 px-6 mb-3 text-base text-blue-700 inline-flex items-center w-full" role="alert">
+        {{ title }}
     </div>
+    <dialog id="announcement-{{ id }}" class="modal">
+        <div class="modal-box">
+            <h3 class="text-lg font-bold">{{title}}</h3>
+            <p class="py-4 text-sm text-gray-700">{{persian_date}}</p>
+            <p class="py-4">{{text}}</p>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>خروج</button>
+        </form>
+    </dialog>
 </div>
