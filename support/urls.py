@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns = [
     path('contact/', views.ContactUsView.as_view(), name='contact-us'),
+    path('chat/', views.ChatView.as_view(), name='chat'), 
 ]

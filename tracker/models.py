@@ -21,10 +21,17 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
 
 class CustomUser(AbstractUser):  
+    USER_TYPE_CHOICES = (
+        ("regular", "معمولی"),
+        ("support", "پشتیبان"),
+        ("moderator", "مدیر"),
+    )
     username = None 
     email = models.EmailField(unique=True)
-
     USERNAME_FIELD = 'email'
+    user_type = models.CharField(choices=USER_TYPE_CHOICES, default='regular', max_length=10)
+    blocked = models.BooleanField(default=False)
+    has_premium = models.BooleanField(default=False)
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()  

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pt-16"></div>
+<div id="chat-window" class=" px-8 h-[40em] " style="border: 1px solid #ccc; overflow-y: scroll;">  
+    {% for message in messages %}
+        
+    {% endfor %}
+</div>
+
+<form id="chat-form" hx-post="{% url 'chat' %}" hx-target="#chat-window" hx-swap="beforeend" class="m-4">  
+    <input class="input input-bordered" id="chat-message-input" type="text" name="message" placeholder="متن پیام" required />  
+    <button type="submit" class="mr-4 btn btn-primary">ارسال</button>  
+</form> 
+{% endblock %}
