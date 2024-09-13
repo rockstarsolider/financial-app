@@ -20,3 +20,12 @@ class Announcement(models.Model):
     @property
     def persian_date(self):
         return format_persian_date(convert_to_persian_calendar_date(self.announced_at))
+
+class ChatMessage(models.Model):  
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='messages')  
+    room_name = models.CharField(max_length=255)  
+    message = models.TextField()  
+    timestamp = models.DateTimeField(auto_now_add=True)  
+
+    class Meta:  
+        ordering = ['timestamp']

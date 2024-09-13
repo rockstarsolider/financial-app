@@ -1,10 +1,12 @@
 from django.views import View  
+from django.views.generic import TemplateView
 from django.shortcuts import render
 from .forms import ContactUsForm  
 from django.contrib import messages
-from django.http import JsonResponse , HttpResponse
-from channels.layers import get_channel_layer  
-from asgiref.sync import async_to_sync  
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from .models import ChatMessage
+from django.http import HttpResponse
+from django.db.models import Max
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -21,23 +23,29 @@ class ContactUsView(View):
             return render(request, 'tracker/home.html')  
         messages.warning(self.request, 'برای ارتباط با ما ابتدا وارد شوید')  
         return render(request, 'support/contact_us.html', {'form': form})
-
-class ChatView(View):
-    def get(self, request):  
-        return render(request, 'support/chat.html')
     
-    def post(self, request):
-        message = request.POST.get('message')  
-        user = request.user.email  # Get the current user's email  
+class ChatRoomView(LoginRequiredMixin, TemplateView):  
+    template_name = 'support/chat_room.html'  
 
-        # Broadcast the message to the WebSocket group  
-        channel_layer = get_channel_layer()  
-        async_to_sync(channel_layer.group_send)(  
-            'support_chat',  
-            {  
-                'type': 'chat_message',  
-                'message': message,  
-                'user': user,  
-            }  
-        )  
-        return JsonResponse({'status':'success'})
+    def get_context_data(self, **kwargs):  
+        context = super().get_context_data(**kwargs)  
+        room_name = kwargs.get('room_name')  
+        
+        messages = ChatMessage.objects.filter(room_name=room_name)  
+        context['room_name'] = room_name
+        context['messages'] = messages  
+        context['username'] = self.request.user.email  # Pass username explicitly  
+        context['email'] = self.request.user.email
+        context['user_type'] = self.request.user.user_type
+        return context
+
+class ChatListView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self): 
+        return self.request.user.user_type == 'support'
+    def handle_no_permission(self):  
+        return HttpResponse(status=204, headers={'HX-Redirect': 'login'})
+    
+    def get(self, request):
+        latest_messages = (ChatMessage.objects.values('room_name').annotate(latest_timestamp=Max('timestamp')))  
+        unique_rooms = ChatMessage.objects.filter(  timestamp__in=[msg['latest_timestamp'] for msg in latest_messages]  ) 
+        return render(request, 'support/chat_list.html', {'rooms': unique_rooms})

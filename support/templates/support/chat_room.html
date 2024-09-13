@@ -1,0 +1,63 @@
+{% extends 'base.html' %}  
+{% load static %}
+{% block content %}
+    <div class="md:px-[20%] lg:px-[25%]">
+        <div class="px-4 pt-20" id="chat-log">  
+            <ul id="messages">  
+                {% for message in messages %}  
+                    <div class="chat {% if user == message.user %} chat-start {% else %} chat-end {% endif %}">
+                        <div class="chat-image avatar">
+                            <div class="w-10 rounded-full">
+                                <img {% if message.user.user_type == "support" %} src="{% static 'image/support.png' %}"{% else %} src="{% static 'image/user.png' %}" {% endif %}/>
+                            </div>
+                        </div>
+                        <div class="chat-bubble {% if user == message.user %} chat-bubble-primary {% endif %}">{{message.message}}</div>
+                    </div>                 
+                {% endfor %}  
+            </ul>  
+        </div>  
+        <div class="flex gap-3 px-4 py-3 w-full fixed bottom-0">
+            <input class="input input-bordered" type="text" id="message-input" placeholder="پیام را بنویسید">  
+            <button id="send-message" class="btn btn-primary">ارسال</button>
+        </div>
+    </div>
+
+    <script>  
+        const chatSocket = new WebSocket(  
+            'ws://' + window.location.host + '/ws/chat/{{ room_name }}/'  
+        );  
+
+        const username = "{{ username }}";  
+        const supportImage = "/static/image/support.png";
+        const userImage = "/static/image/user.png";
+
+        document.getElementById('send-message').onclick = function() {  
+            const messageInput = document.getElementById('message-input');  
+            const message = messageInput.value;  
+            const userEmail = "{{ email }}";
+            const user_type = "{{ user_type }}";
+            if (message) { 
+                chatSocket.send(JSON.stringify({  
+                    'message': message,  
+                    'email': userEmail,
+                    'user_type': user_type
+                }));  
+                messageInput.value = '';  // Clear input  
+            }  
+        };   
+
+        chatSocket.onmessage = function(e) {  
+            const data = JSON.parse(e.data);  
+            const chatLog = document.getElementById('messages');
+            if (username == data.username){
+                chatLog.innerHTML += data.user_type=='regular'?`<div class="chat chat-start"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${userImage}" /></div></div><div class="chat-bubble chat-bubble-primary">${data.message}</div></div>`:`<div class="chat chat-start"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${supportImage}" /></div></div><div class="chat-bubble chat-bubble-primary">${data.message}</div></div>`  
+            } else {
+                chatLog.innerHTML += data.user_type=='regular'?`<div class="chat chat-end"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${userImage}" /></div></div><div class="chat-bubble">${data.message}</div></div>` :`<div class="chat chat-end"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${supportImage}" /></div></div><div class="chat-bubble">${data.message}</div></div>`  
+            }
+        };
+
+        chatSocket.onclose = function(e) {  
+            console.error('Chat socket closed unexpectedly');  
+        };  
+    </script> 
+{% endblock %}

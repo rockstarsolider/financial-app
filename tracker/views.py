@@ -33,7 +33,7 @@ class CustomLoginView(LoginView):
         if user.first_name:
             message = f'{user.first_name} عزیز خوش آمدی '
         messages.success(self.request, message)  
-        return render(self.request, 'tracker/home.html')
+        return redirect('home')
     
 class CustomLogoutView(View):  
     def get(self, request, *args, **kwargs):  
@@ -42,7 +42,7 @@ class CustomLogoutView(View):
     
 class HomeView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'tracker/home.html', {})
+        return render(request, 'tracker/home.html', {'chat_url':request.user.email.split('@')[0]})
     
 class TransactionView(LoginRequiredMixin, View):  
     def get(self, request, pk=None):  

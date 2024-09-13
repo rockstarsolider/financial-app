@@ -1,5 +1,5 @@
 {% extends 'base.html' %}  
-
+{% load static %}
 {% block content %}  
 
 {% if user.is_authenticated %}
@@ -51,6 +51,16 @@
     </div>
   </div>
 </main>
+
+{% if user.user_type == 'regular' %}
+  <a href="{% url 'chat_room' chat_url %}" class="md:w-12 w-16 fixed bottom-32 cursor-pointer">
+    <img class="rounded-l-full" src="{% static 'image/chat.png' %}">
+  </a>
+{% else %}
+  <a href="{% url 'chat_list' %}" class="md:w-12 w-16 fixed bottom-32 cursor-pointer">
+    <img class="rounded-l-full" src="{% static 'image/chat.png' %}">
+  </a>
+{% endif %}
   
 {% include 'partial/toast.html' %} 
 

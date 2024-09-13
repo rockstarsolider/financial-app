@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="px-4 w-full flex flex-col justify-center items-center">
+    <h2 class="text-xl font-medium pt-20">لیست پیام ها</h2>
+    <ul class="flex flex-col pt-5 gap-2">
+        {% for room in rooms %}
+            <a class="btn btn-neutral w-56" hx-get="{% url 'chat_room' room.room_name %}" hx-target="body" hx-push-url="true">{{room.room_name}}</a>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
