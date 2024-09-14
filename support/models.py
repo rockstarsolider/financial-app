@@ -24,7 +24,8 @@ class Announcement(models.Model):
 class ChatMessage(models.Model):  
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='messages')  
     room_name = models.CharField(max_length=255)  
-    message = models.TextField()  
+    message = models.TextField(verbose_name='پیام')  
+    attachment = models.FileField(upload_to='attachments/', blank=True, null=True, verbose_name='فایل پیوست')
     timestamp = models.DateTimeField(auto_now_add=True)  
 
     class Meta:  

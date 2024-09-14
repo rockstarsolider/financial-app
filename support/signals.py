@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import Announcement
+from .models import Announcement, ChatMessage
 
 @receiver(post_save, sender=Announcement)  
 def notify_users_on_announcement(sender, instance, created, **kwargs):  
@@ -17,4 +17,20 @@ def notify_users_on_announcement(sender, instance, created, **kwargs):
             'persian_date': instance.persian_date,
             'pk': instance.pk,
         }  
-        async_to_sync(channel_layer.group_send)(group_name, event)  
+        async_to_sync(channel_layer.group_send)(group_name, event)
+
+@receiver(post_save, sender=ChatMessage)  
+def chat_message_handler(sender, instance, created, **kwargs):  
+    if created:  
+        channel_layer = get_channel_layer()  
+        async_to_sync(channel_layer.group_send)(  
+            f'chat_{instance.room_name}',  
+            {  
+                'type': 'chat_message',  
+                'message': instance.message,  
+                'username': instance.user.email,
+                'user_type': instance.user.user_type,
+                'timestamp': instance.timestamp.isoformat(),
+                'attachment': instance.attachment.url if instance.attachment else None,
+            }  
+        )  

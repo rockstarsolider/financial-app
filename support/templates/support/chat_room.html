@@ -1,8 +1,10 @@
 {% extends 'base.html' %}  
 {% load static %}
+{% load widget_tweaks %}
 {% block content %}
-    <div class="md:px-[20%] lg:px-[25%]">
-        <div class="px-4 pt-20" id="chat-log">  
+    <div class="flex flex-col justify-center items-center">
+        <h2 class="font-medium text-xl pt-20">گفتکو با پشتیبان</h2>
+        <div class="px-4 pt-4 md:w-[60%] lg:w-[50%] " id="chat-log">  
             <ul id="messages">  
                 {% for message in messages %}  
                     <div class="chat {% if user == message.user %} chat-start {% else %} chat-end {% endif %}">
@@ -11,15 +13,23 @@
                                 <img {% if message.user.user_type == "support" %} src="{% static 'image/support.png' %}"{% else %} src="{% static 'image/user.png' %}" {% endif %}/>
                             </div>
                         </div>
-                        <div class="chat-bubble {% if user == message.user %} chat-bubble-primary {% endif %}">{{message.message}}</div>
+                        <div class="chat-bubble {% if user == message.user %} chat-bubble-primary {% endif %}">
+                            {{message.message}}
+                            {% if message.attachment %}
+                                <br/>
+                                <a href="{{message.attachment.url}}">دیدن فایل پیوست</a>
+                            {% endif %}
+                        </div>
                     </div>                 
                 {% endfor %}  
             </ul>  
         </div>  
-        <div class="flex gap-3 px-4 py-3 w-full fixed bottom-0">
-            <input class="input input-bordered" type="text" id="message-input" placeholder="پیام را بنویسید">  
+        <form hx-post="{% url 'chat_room' room_name %}" hx-target="body" enctype="multipart/form-data" class="flex gap-3 px-4 py-3 w-full fixed bottom-0">
+            {% csrf_token %} 
+            {% render_field form.attachment class='file-input file-input-bordered' %}
+            {% render_field form.message class='input input-md input-bordered' %}
             <button id="send-message" class="btn btn-primary">ارسال</button>
-        </div>
+        </form>
     </div>
 
     <script>  
@@ -31,28 +41,13 @@
         const supportImage = "/static/image/support.png";
         const userImage = "/static/image/user.png";
 
-        document.getElementById('send-message').onclick = function() {  
-            const messageInput = document.getElementById('message-input');  
-            const message = messageInput.value;  
-            const userEmail = "{{ email }}";
-            const user_type = "{{ user_type }}";
-            if (message) { 
-                chatSocket.send(JSON.stringify({  
-                    'message': message,  
-                    'email': userEmail,
-                    'user_type': user_type
-                }));  
-                messageInput.value = '';  // Clear input  
-            }  
-        };   
-
         chatSocket.onmessage = function(e) {  
             const data = JSON.parse(e.data);  
             const chatLog = document.getElementById('messages');
             if (username == data.username){
-                chatLog.innerHTML += data.user_type=='regular'?`<div class="chat chat-start"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${userImage}" /></div></div><div class="chat-bubble chat-bubble-primary">${data.message}</div></div>`:`<div class="chat chat-start"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${supportImage}" /></div></div><div class="chat-bubble chat-bubble-primary">${data.message}</div></div>`  
+                chatLog.innerHTML += data.user_type=='regular'?`<div class="chat chat-start"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${userImage}" /></div></div><div class="chat-bubble chat-bubble-primary">${data.message}${data.attachment?`<br/><a href="${data.attachment}">دیدن فایل پیوست</a>`:''}</div></div>`:`<div class="chat chat-start"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${supportImage}" /></div></div><div class="chat-bubble chat-bubble-primary">${data.message}${data.attachment?`<br/><a href="${data.attachment}">دیدن فایل پیوست</a>`:''}</div></div>`  
             } else {
-                chatLog.innerHTML += data.user_type=='regular'?`<div class="chat chat-end"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${userImage}" /></div></div><div class="chat-bubble">${data.message}</div></div>` :`<div class="chat chat-end"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${supportImage}" /></div></div><div class="chat-bubble">${data.message}</div></div>`  
+                chatLog.innerHTML += data.user_type=='regular'?`<div class="chat chat-end"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${userImage}" /></div></div><div class="chat-bubble">${data.message}${data.attachment?`<br/><a href="${data.attachment}">دیدن فایل پیوست</a>`:''}</div></div>` :`<div class="chat chat-end"><div class="chat-image avatar"><div class="w-10 rounded-full"><img alt="support"src="${supportImage}" /></div></div><div class="chat-bubble">${data.message}${data.attachment?`<br/><a href="${data.attachment}">دیدن فایل پیوست</a>`:''}</div></div>`  
             }
         };
 

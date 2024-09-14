@@ -1,12 +1,13 @@
 from django.views import View  
 from django.views.generic import TemplateView
 from django.shortcuts import render
-from .forms import ContactUsForm  
+from .forms import ContactUsForm, ChatMessageForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import ChatMessage
 from django.http import HttpResponse
 from django.db.models import Max
+from django.shortcuts import redirect
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -20,7 +21,7 @@ class ContactUsView(View):
             contact_us.user = request.user
             contact_us.save()
             messages.success(self.request, 'فرم با موفقیت ثبت شد') 
-            return render(request, 'tracker/home.html')  
+            return redirect('home') 
         messages.warning(self.request, 'برای ارتباط با ما ابتدا وارد شوید')  
         return render(request, 'support/contact_us.html', {'form': form})
     
@@ -32,12 +33,26 @@ class ChatRoomView(LoginRequiredMixin, TemplateView):
         room_name = kwargs.get('room_name')  
         
         messages = ChatMessage.objects.filter(room_name=room_name)  
+        form = ChatMessageForm() 
         context['room_name'] = room_name
         context['messages'] = messages  
-        context['username'] = self.request.user.email  # Pass username explicitly  
         context['email'] = self.request.user.email
+        context['username'] = self.request.user.email
         context['user_type'] = self.request.user.user_type
+        context['form'] = form
         return context
+    def post(self, request, **kwargs):
+        room_name = kwargs.get('room_name')  
+        form = ChatMessageForm(request.POST, request.FILES)
+        if form.is_valid():
+            chat_message = form.save(commit=False)
+            chat_message.room_name = room_name
+            chat_message.user = request.user
+            chat_message.save()
+            return redirect('chat_room', room_name=room_name)
+        context = self.get_context_data(**kwargs)
+        context['form'] = form
+        return self.render_to_response(context)
 
 class ChatListView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self): 
