@@ -4,10 +4,11 @@ from django.shortcuts import render
 from .forms import ContactUsForm, ChatMessageForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import ChatMessage
-from django.http import HttpResponse
+from .models import ChatMessage, Forum, ForumMessage
+from django.http import HttpResponse, JsonResponse
 from django.db.models import Max
 from django.shortcuts import redirect
+from django.utils import timezone
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -31,7 +32,6 @@ class ChatRoomView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):  
         context = super().get_context_data(**kwargs)  
         room_name = kwargs.get('room_name')  
-        
         messages = ChatMessage.objects.filter(room_name=room_name)  
         form = ChatMessageForm() 
         context['room_name'] = room_name
@@ -64,3 +64,33 @@ class ChatListView(LoginRequiredMixin, UserPassesTestMixin, View):
         latest_messages = (ChatMessage.objects.values('room_name').annotate(latest_timestamp=Max('timestamp')))  
         unique_rooms = ChatMessage.objects.filter(  timestamp__in=[msg['latest_timestamp'] for msg in latest_messages]  ) 
         return render(request, 'support/chat_list.html', {'rooms': unique_rooms})
+    
+class ForumView(LoginRequiredMixin, View):
+    def get(self, request, forum_name):  
+        if not request.user.has_premium:  
+            return redirect('home')
+        forum = Forum.objects.get(name=forum_name)  
+        forums = Forum.objects.all()
+        messages = ForumMessage.objects.filter(forum=forum)  
+        
+        return render(request, 'support/forum.html', {  
+            'forum': forum,  
+            'messages': messages,  
+            'forums':forums
+        })
+
+class ForumMessageView(LoginRequiredMixin, View):  
+    def post(self, request, forum_name):    
+        if request.user.blocked:  
+            messages.error('شما بلاک شده اید و نمیتوانید پیامی ارسال کنید')
+            return render(request, 'support/forum.html', {})
+        message_text = request.POST.get('message')  
+        if message_text.strip():  
+            forum = Forum.objects.get(name=forum_name)  
+            ForumMessage.objects.create(user=request.user, forum=forum, message=message_text)
+        
+        return render(request, 'partial/message.html', {
+            'message': message_text,
+            'username': request.user.email,
+            'timestamp': timezone.now().isoformat(),
+        })

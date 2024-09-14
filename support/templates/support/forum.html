@@ -1,0 +1,20 @@
+{% extends 'base.html' %}  
+
+{% block content %}  
+
+<div class="flex flex-col md:grid md:grid-cols-4 pt-20 px-4 gap-4">
+    <div class="col-span-1">
+        <ul class="menu bg-base-200 rounded-box w-40 flex flex-wrap">
+            {% for forum_page in forums %}
+                <li><a href="{% url 'forum' forum_page.name %}">{{forum_page.name}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-span-3">
+        {% include 'partial/forum_room.html' %}
+    </div>
+</div>
+
+{% include 'partial/toast.html' %} 
+
+{% endblock %}  

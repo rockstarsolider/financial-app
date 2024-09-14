@@ -4,7 +4,7 @@
 {% block content %}
     <div class="flex flex-col justify-center items-center">
         <h2 class="font-medium text-xl pt-20">گفتکو با پشتیبان</h2>
-        <div class="px-4 pt-4 md:w-[60%] lg:w-[50%] " id="chat-log">  
+        <div class="px-4 pt-4 lg:w-[50%] w-full" id="chat-log">  
             <ul id="messages">  
                 {% for message in messages %}  
                     <div class="chat {% if user == message.user %} chat-start {% else %} chat-end {% endif %}">
