@@ -42,6 +42,7 @@ class ForumMessage(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)  
     message = models.TextField()  
+    attachment = models.FileField(upload_to='attachments/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):

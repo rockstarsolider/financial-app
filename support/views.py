@@ -8,7 +8,6 @@ from .models import ChatMessage, Forum, ForumMessage
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Max
 from django.shortcuts import redirect
-from django.utils import timezone
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -84,9 +83,10 @@ class ForumMessageView(LoginRequiredMixin, View):
         if request.user.blocked:  
             messages.error('شما بلاک شده اید و نمیتوانید پیامی ارسال کنید')
             return render(request, 'support/forum.html', {})
-        message_text = request.POST.get('message')  
-        if message_text.strip():  
+        message_text = request.POST.get('message') 
+        attachment = request.FILES.get('attachment') 
+        if message_text.strip() or attachment:  
             forum = Forum.objects.get(name=forum_name)  
-            ForumMessage.objects.create(user=request.user, forum=forum, message=message_text)
+            ForumMessage.objects.create(user=request.user, forum=forum, message=message_text, attachment=attachment)
         
         return render(request, 'partial/message.html')

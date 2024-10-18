@@ -4,12 +4,16 @@
         {% for message in messages %}
             <div class="message">  
                 <strong>{{ message.user.first_name }}</strong>: {{ message.message }}
+                {% if message.attachment %}
+                <br><a href="{{message.attachment.url}}" class='text-primary underline' target="_blank">دیدن فایل پیوست</a>
+                {% endif %}
             </div>
         {% endfor %}  
     </div>
 
-    <form id="message-form" method="POST" hx-post="{% url 'forum_message' forum.name %}" hx-target="#messages" hx-swap="beforeend" class="flex gap-4 p-4 fixed bottom-0">  
+    <form id="message-form" method="POST" enctype="multipart/form-data" hx-post="{% url 'forum_message' forum.name %}" hx-target="#messages" hx-swap="beforeend" class="flex gap-4 p-4 fixed bottom-0">  
         {% csrf_token %}  
+        <input type="file" name="attachment" class="file-input file-input-bordered" accept="*/*"/>
         <textarea name="message" required class="input input-bordered" placeholder="پیام را بنویسید"></textarea>  
         <button class="btn btn-primary" type="submit">ارسال</button>  
     </form>  
@@ -24,7 +28,11 @@
     chatSocket.onmessage = function(e) {  
         const data = JSON.parse(e.data);  
         const messagesDiv = document.getElementById('messages');  
-        messagesDiv.innerHTML += `<div class="message"><strong>${data.email}</strong>: ${ data.message }</div>`;  
+        var messageHTML =  `<div class="message"><strong>${data.email}</strong>: ${ data.message }</div>`; 
+        if (data.attachment) {
+            messageHTML += `<a href="${data.attachment}" class='text-primary underline' target="_blank">دیدن فایل پیوست</a>`;  
+        }
+        messagesDiv.innerHTML += messageHTML
     };  
 
     chatSocket.onclose = function(e) {  

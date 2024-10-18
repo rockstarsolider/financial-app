@@ -42,6 +42,7 @@ def send_message_to_group(sender, instance, created, **kwargs):
         message_data = {  
             'message': instance.message,  
             'email': instance.user.first_name,  
+            'attachment': instance.attachment.url if instance.attachment else None,
         }  
         async_to_sync(channel_layer.group_send)(  
             f'forum_{instance.forum.name}',  # Group name based on the forum  
@@ -49,5 +50,6 @@ def send_message_to_group(sender, instance, created, **kwargs):
                 'type': 'forum_message',      # Type for the consumer to handle  
                 'message': message_data['message'],  
                 'email': message_data['email'],  
+                'attachment': message_data['attachment'],
             }  
         ) 

@@ -81,14 +81,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = event['message']  
         username = event['username']  
         user_type = event['user_type']
-        attachment = event['attachment']
+        # attachment = event['attachment']
 
         # Send message to WebSocket  
         await self.send(text_data=json.dumps({  
             'message': message,  
             'username': username,
             'user_type': user_type,
-            'attachment': attachment
+            # 'attachment': attachment
         }))
 
 
@@ -108,6 +108,7 @@ class ForumConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)  
         message = data['message']  
         email = data['email']  
+        attachment = data['attachment']
         
         await self.channel_layer.group_send(  
             self.room_group_name,  
@@ -115,15 +116,18 @@ class ForumConsumer(AsyncWebsocketConsumer):
                 'type': 'forum_message',  
                 'message': message,  
                 'email': email,  
+                'attachment': attachment
             }  
         )  
 
     async def forum_message(self, event):  
         message = event['message']  
         email = event['email']  
+        attachment = event.get('attachment')
 
         # Send message to WebSocket  
         await self.send(text_data=json.dumps({  
             'message': message,  
             'email': email,  
+            'attachment': attachment,
         }))  
