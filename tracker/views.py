@@ -40,7 +40,7 @@ class CustomLogoutView(View):
         logout(request)
         return redirect('logout_confirm')
     
-class HomeView(View):
+class HomeView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'tracker/home.html', {'chat_url':request.user.email.split('@')[0]})
     

@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import Announcement, ChatMessage
+from .models import Announcement, ChatMessage, ForumMessage
 
 @receiver(post_save, sender=Announcement)  
 def notify_users_on_announcement(sender, instance, created, **kwargs):  
@@ -34,3 +34,20 @@ def chat_message_handler(sender, instance, created, **kwargs):
                 'attachment': instance.attachment.url if instance.attachment else None,
             }  
         )  
+
+@receiver(post_save, sender=ForumMessage)  
+def send_message_to_group(sender, instance, created, **kwargs):  
+    if created:  
+        channel_layer = get_channel_layer()  
+        message_data = {  
+            'message': instance.message,  
+            'email': instance.user.first_name,  
+        }  
+        async_to_sync(channel_layer.group_send)(  
+            f'forum_{instance.forum.name}',  # Group name based on the forum  
+            {  
+                'type': 'forum_message',      # Type for the consumer to handle  
+                'message': message_data['message'],  
+                'email': message_data['email'],  
+            }  
+        ) 

@@ -89,8 +89,4 @@ class ForumMessageView(LoginRequiredMixin, View):
             forum = Forum.objects.get(name=forum_name)  
             ForumMessage.objects.create(user=request.user, forum=forum, message=message_text)
         
-        return render(request, 'partial/message.html', {
-            'message': message_text,
-            'username': request.user.email,
-            'timestamp': timezone.now().isoformat(),
-        })
+        return render(request, 'partial/message.html')

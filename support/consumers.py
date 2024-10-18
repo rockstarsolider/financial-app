@@ -107,22 +107,23 @@ class ForumConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):  
         data = json.loads(text_data)  
         message = data['message']  
-        username = data['username']  
+        email = data['email']  
         
         await self.channel_layer.group_send(  
             self.room_group_name,  
             {  
                 'type': 'forum_message',  
                 'message': message,  
-                'username': username,  
+                'email': email,  
             }  
         )  
 
     async def forum_message(self, event):  
         message = event['message']  
-        username = event['username']  
+        email = event['email']  
 
+        # Send message to WebSocket  
         await self.send(text_data=json.dumps({  
             'message': message,  
-            'username': username,  
+            'email': email,  
         }))  

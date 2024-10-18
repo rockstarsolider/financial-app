@@ -33,7 +33,10 @@ class ChatMessage(models.Model):
 
 class Forum(models.Model):  
     name = models.CharField(max_length=255)  
-    created_at = models.DateTimeField(auto_now_add=True)  
+    created_at = models.DateTimeField(auto_now_add=True) 
+
+    def __str__(self):
+        return self.name 
 
 class ForumMessage(models.Model):  
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  
@@ -41,5 +44,5 @@ class ForumMessage(models.Model):
     message = models.TextField()  
     created_at = models.DateTimeField(auto_now_add=True) 
 
-    class Meta:  
-        ordering = ['created_at'] 
+    def __str__(self):
+        return f'Message by {self.user} at {self.forum}'

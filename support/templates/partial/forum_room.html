@@ -1,11 +1,12 @@
-<div id="forum-container" class="">  
-    <div id="messages">  
-        {% for message in messages %}  
+<div id="forum-container" class="">
+    <h2 class='font-medium text-2xl border-b border-gray-300 pb-2 lg:ml-10'>{{forum.name}}</h2>
+    <div id="messages" class='flex flex-col gap-2 pt-2'>  
+        {% for message in messages %}
             <div class="message">  
                 <strong>{{ message.user.first_name }}</strong>: {{ message.message }}
             </div>
         {% endfor %}  
-    </div>  
+    </div>
 
     <form id="message-form" method="POST" hx-post="{% url 'forum_message' forum.name %}" hx-target="#messages" hx-swap="beforeend" class="flex gap-4 p-4 fixed bottom-0">  
         {% csrf_token %}  
@@ -23,10 +24,10 @@
     chatSocket.onmessage = function(e) {  
         const data = JSON.parse(e.data);  
         const messagesDiv = document.getElementById('messages');  
-        messagesDiv.innerHTML += `<div class="message"><strong>${data.message.user.first_name}</strong>: ${ data.message }</div>`;  
+        messagesDiv.innerHTML += `<div class="message"><strong>${data.email}</strong>: ${ data.message }</div>`;  
     };  
 
     chatSocket.onclose = function(e) {  
         console.error('Chat socket closed unexpectedly');  
     };  
-</script> 
+</script>
