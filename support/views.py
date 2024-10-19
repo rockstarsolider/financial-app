@@ -102,4 +102,4 @@ class ForumMessageView(LoginRequiredMixin, View):
     def delete(self, request, message_id):  
         message = get_object_or_404(ForumMessage, id=message_id)  
         message.delete()  
-        return HttpResponse(status=200)
+        return render(request, 'partial/message.html')
