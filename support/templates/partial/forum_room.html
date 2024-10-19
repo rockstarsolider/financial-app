@@ -11,11 +11,13 @@
         {% endfor %}  
     </div>
 
-    <form id="message-form" method="POST" enctype="multipart/form-data" hx-post="{% url 'forum_message' forum.name %}" hx-target="#messages" hx-swap="beforeend" class="flex gap-4 p-4 fixed bottom-0">  
+    <form id="message-form" method="POST" enctype="multipart/form-data" hx-post="{% url 'forum_message' forum.name %}" hx-target="#messages" hx-swap="beforeend" class="flex flex-col gap-2 p-4 fixed bottom-0">  
         {% csrf_token %}  
-        <input type="file" name="attachment" class="file-input file-input-bordered" accept="*/*"/>
-        <textarea name="message" required class="input input-bordered" placeholder="پیام را بنویسید"></textarea>  
-        <button class="btn btn-primary" type="submit">ارسال</button>  
+        <input type="file" id='form-file' name="attachment" class="file-input file-input-bordered" accept="*/*"/>
+        <div class='flex gap-2'>
+            <textarea name="message" id='form-message' required class="input input-bordered" placeholder="پیام را بنویسید"></textarea>  
+            <button class="btn btn-primary" type="submit">ارسال</button>  
+        </div>
     </form>  
 </div>
 
@@ -38,4 +40,11 @@
     chatSocket.onclose = function(e) {  
         console.error('Chat socket closed unexpectedly');  
     };  
+
+    document.getElementById('message-form').addEventListener("submit", (event) => {
+        setTimeout(function(){
+            document.getElementById('form-message').value = ''
+            document.getElementById('form-file').value = ''
+        }, 100);
+    });
 </script>

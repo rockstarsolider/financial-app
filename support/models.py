@@ -1,6 +1,7 @@
 from django.db import models
 from tracker.models import CustomUser
-from custom_translate.templatetags.persian_calendar_convertor import convert_to_persian_calendar, format_persian_date, format_persian_datetime, convert_to_persian_calendar_date
+from custom_translate.templatetags.persian_calendar_convertor import format_persian_date, convert_to_persian_calendar_date
+from django.core.validators import FileExtensionValidator
 
 class ContactUs(models.Model):
     user = models.ForeignKey(CustomUser, models.CASCADE)
@@ -42,7 +43,7 @@ class ForumMessage(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE)  
     message = models.TextField()  
-    attachment = models.FileField(upload_to='attachments/', blank=True, null=True)
+    attachment = models.FileField(upload_to='attachments/', blank=True, null=True, validators=[FileExtensionValidator(['png', 'jpg', 'jpeg', 'webp'])])
     created_at = models.DateTimeField(auto_now_add=True) 
 
     def __str__(self):

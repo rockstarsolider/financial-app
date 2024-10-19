@@ -7,4 +7,5 @@ urlpatterns = [
     path('chat_list/', views.ChatListView.as_view(), name='chat_list'),  
     path('forum/<str:forum_name>/', views.ForumView.as_view(), name='forum'),  
     path('forum/<str:forum_name>/message/', views.ForumMessageView.as_view(), name='forum_message'), 
+    path('forum/message/<int:message_id>/', views.ForumMessageView.as_view(), name='forum_message_delete'),
 ]

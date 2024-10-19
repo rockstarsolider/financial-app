@@ -1,13 +1,15 @@
 from django.views import View  
 from django.views.generic import TemplateView
-from django.shortcuts import render
 from .forms import ContactUsForm, ChatMessageForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import ChatMessage, Forum, ForumMessage
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.db.models import Max
 from django.shortcuts import redirect
+from django.shortcuts import render, get_object_or_404  
+from django.core.exceptions import ValidationError  
+from django.core.validators import FileExtensionValidator
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -84,9 +86,20 @@ class ForumMessageView(LoginRequiredMixin, View):
             messages.error('شما بلاک شده اید و نمیتوانید پیامی ارسال کنید')
             return render(request, 'support/forum.html', {})
         message_text = request.POST.get('message') 
-        attachment = request.FILES.get('attachment') 
+        attachment = request.FILES.get('attachment')
+        if attachment:  
+            try:  
+                FileExtensionValidator(['png', 'jpg', 'jpeg', 'webp'])(attachment)  
+            except ValidationError as e:  
+                messages.error(request, 'فایل های مجاز: png, jpg, jpeg, webp')  
+                return render(request, 'partial/message.html', {'error':True})
         if message_text.strip() or attachment:  
             forum = Forum.objects.get(name=forum_name)  
             ForumMessage.objects.create(user=request.user, forum=forum, message=message_text, attachment=attachment)
         
         return render(request, 'partial/message.html')
+    
+    def delete(self, request, message_id):  
+        message = get_object_or_404(ForumMessage, id=message_id)  
+        message.delete()  
+        return HttpResponse(status=200)
