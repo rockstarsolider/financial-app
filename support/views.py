@@ -10,6 +10,7 @@ from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404  
 from django.core.exceptions import ValidationError  
 from django.core.validators import FileExtensionValidator
+from tracker.models import CustomUser
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -83,8 +84,8 @@ class ForumView(LoginRequiredMixin, View):
 class ForumMessageView(LoginRequiredMixin, View):  
     def post(self, request, forum_name):    
         if request.user.blocked:  
-            messages.error('شما بلاک شده اید و نمیتوانید پیامی ارسال کنید')
-            return render(request, 'support/forum.html', {})
+            messages.error(request, 'شما بلاک شده اید و نمیتوانید پیامی ارسال کنید')
+            return render(request, 'partial/message.html', {'error': True})
         message_text = request.POST.get('message') 
         attachment = request.FILES.get('attachment')
         if attachment:  
@@ -101,5 +102,14 @@ class ForumMessageView(LoginRequiredMixin, View):
     
     def delete(self, request, message_id):  
         message = get_object_or_404(ForumMessage, id=message_id)  
-        message.delete()  
-        return render(request, 'partial/message.html')
+        message.delete()
+        messages.success(request, 'پیام با موفقیت حذف شد')  
+        return render(request, 'partial/message.html', {'error':True})
+    
+class BlockUserView(View):  
+    def post(self, request, user_id):  
+        user = get_object_or_404(CustomUser, id=user_id)  
+        user.blocked = True
+        user.save()  
+        messages.success(request, 'کاربر با موفقیت بلاک شد')
+        return render(request, 'partial/message.html', {'error':True})
