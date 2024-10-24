@@ -5,12 +5,13 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import ChatMessage, Forum, ForumMessage
 from django.http import HttpResponse
-from django.db.models import Max
+from django.db.models import Max, Min
 from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404  
 from django.core.exceptions import ValidationError  
 from django.core.validators import FileExtensionValidator
 from tracker.models import CustomUser
+from custom_translate.templatetags.persian_calendar_convertor import format_persian_datetime, convert_to_persian_calendar
 
 class ContactUsView(View):  
     def get(self, request):  
@@ -63,9 +64,17 @@ class ChatListView(LoginRequiredMixin, UserPassesTestMixin, View):
         return HttpResponse(status=204, headers={'HX-Redirect': 'login'})
     
     def get(self, request):
-        latest_messages = (ChatMessage.objects.values('room_name').annotate(latest_timestamp=Max('timestamp')))  
-        unique_rooms = ChatMessage.objects.filter(  timestamp__in=[msg['latest_timestamp'] for msg in latest_messages]  ) 
-        return render(request, 'support/chat_list.html', {'rooms': unique_rooms})
+        chat_list = (  
+            ChatMessage.objects.values('room_name')
+            .annotate(  
+                latest_message_timestamp=Max('timestamp'),  
+                oldest_message_timestamp=Min('timestamp')  
+            )
+        )
+        for chat in chat_list:  
+            chat['latest_message_timestamp'] = format_persian_datetime(convert_to_persian_calendar(chat['latest_message_timestamp']))  
+            chat['oldest_message_timestamp'] = format_persian_datetime(convert_to_persian_calendar(chat['oldest_message_timestamp'])) 
+        return render(request, 'support/chat_list.html', {'chat_list': chat_list })
     
 class ForumView(LoginRequiredMixin, View):
     def get(self, request, forum_name):  

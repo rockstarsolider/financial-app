@@ -1,13 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="px-4 w-full flex flex-col justify-center items-center">
+<div class="px-4 md:px-10 lg:px-[5%] w-full flex flex-col justify-center items-center">
     <h2 class="text-xl font-medium pt-20">لیست پیام ها</h2>
-    <ul class="flex flex-col pt-5 gap-2">
-        {% for room in rooms %}
-            <a class="btn btn-neutral w-56" hx-get="{% url 'chat_room' room.room_name %}" hx-target="body" hx-push-url="true">{{room.room_name}}</a>
-        {% endfor %}
-    </ul>
+    <table class="table w-full mt-5"> 
+        <thead class="text-xs uppercase">  
+            <tr class="border-b border-gray-500">  
+                <th class="py-3">ایمیل کاربر:</th>  
+                <th class="py-3">اولین پیام:</th>  
+                <th class="py-3">آخرین پیام:</th>  
+                <th class="py-3">لینک چت:</th>  
+            </tr>  
+        </thead>  
+        <tbody>  
+            {% for chat in chat_list %}  
+                <tr class="border-b border-gray-500 even:bg-[#edeff0]">
+                    <td>{{chat.room_name}}@gmail.com</td>   
+                    <td>{{chat.latest_message_timestamp}}</td>   
+                    <td>{{chat.oldest_message_timestamp}}</td>   
+                    <td><button hx-get="{% url 'chat_room' chat.room_name %}" hx-target="body" hx-push-url="true" class='btn btn-primary btn-sm'>گفتگو</button></td>   
+                </tr>  
+            {% endfor %}  
+        </tbody>  
+    </table>
 </div>
 
 {% endblock %}
