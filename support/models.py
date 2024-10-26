@@ -71,5 +71,5 @@ class Ticket(models.Model):
     is_resolved = models.BooleanField(default=False)
     resolved_at = models.DateTimeField(blank=True, null=True)
     priority = models.CharField(max_length=50, choices=PRIORITY_CHOICES, verbose_name='اولویت')
-    category = models.ForeignKey(TicketCategory, on_delete=models.CASCADE, verbose_name='دسته')
+    category = models.ForeignKey(TicketCategory, on_delete=models.CASCADE, verbose_name='واحد مربوطه')
     attachment = models.FileField(upload_to='attachments/', blank=True, null=True, validators=[FileExtensionValidator(['png', 'jpg', 'jpeg', 'webp'])], verbose_name='فایل پیوست')
