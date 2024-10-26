@@ -1,9 +1,9 @@
 from django.views import View  
 from django.views.generic import TemplateView
-from .forms import ContactUsForm, ChatMessageForm
+from .forms import ContactUsForm, ChatMessageForm, TicketForm
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import ChatMessage, Forum, ForumMessage
+from .models import ChatMessage, Forum, ForumMessage, Announcement, TicketCategory
 from django.http import HttpResponse
 from django.db.models import Max, Min
 from django.shortcuts import redirect
@@ -122,3 +122,34 @@ class BlockUserView(View):
         user.save()  
         messages.success(request, 'کاربر با موفقیت بلاک شد')
         return render(request, 'partial/message.html', {'error':True})
+    
+class TicketView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'support/ticket.html', {'form': TicketForm()})
+    
+    def post(self, request):
+        form = TicketForm(request.POST)  
+        attachment = request.FILES.get('attachment')
+        if form.is_valid():
+            ticket = form.save(commit=False)  
+            category_user = form.cleaned_data['category'].user
+            print(category_user)
+            ticket.support_agent = request.user
+            if attachment:
+                ticket.attachment = attachment
+            ticket.save()
+            messages.success(self.request, 'فرم با موفقیت ثبت شد')
+            category_user.email_user(
+                f'مشکل در بخش {form.cleaned_data['category']}',
+                f'یک تیکت توسط پشتیبان با ایمیل {request.user} ساخته شده',
+                'admin@gmail.com',
+                fail_silently = False
+            )
+            Announcement.objects.create(
+                title=f'مشکل در بخش {form.cleaned_data['category']}', 
+                text=f'یک تیکت توسط پشتیبان با ایمیل {request.user} ساخته شده',
+                target_user = category_user
+            )
+            return render(request, 'support/ticket.html',{'form': TicketForm()})
+        messages.error(self.request, 'فرم ثبت نشد!')
+        return render(request, 'support/ticket.html',{'form': form})

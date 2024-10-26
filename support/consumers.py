@@ -25,15 +25,20 @@ class NotificationConsumer(WebsocketConsumer):
             )
     
     def new_announcement(self, event):  
-        html = get_template('partial/notification.html').render(  
+        html = get_template('partial/notification.html').render(
             context={
                 'title': event['title'],
                 'text': event['text'],
                 'persian_date': event['persian_date'],
                 'pk': event['pk'],
+                'target_user': event['target_user']
             }  
         )  
-        self.send(text_data=html)
+        if event['target_user']:
+            if event['target_user'] == self.user:
+                self.send(text_data=html)
+        else:
+            self.send(text_data=html)
 
 class ChatConsumer(AsyncWebsocketConsumer):  
     async def connect(self):  

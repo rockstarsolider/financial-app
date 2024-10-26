@@ -1,5 +1,5 @@
 from django import forms  
-from .models import ContactUs, ChatMessage
+from .models import ContactUs, ChatMessage, Ticket
 
 class ContactUsForm(forms.ModelForm):  
     title = forms.CharField(required=True, max_length=40, label='عنوان')
@@ -16,3 +16,8 @@ class ChatMessageForm(forms.ModelForm):
         widgets = {
             'message': forms.TextInput(attrs={'placeholder': 'پیام را بنویسید'}),
         }
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ['title', 'description', 'priority', 'category', 'attachment']

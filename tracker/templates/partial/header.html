@@ -9,11 +9,14 @@
       </button>
       <h2 class="text-xl font-medium">مدیریت مالی</h2>
     </div>
-    <nav class="hidden md:flex md:gap-x-11 md:text-sm md:font-semibold md:leading-6 md:text-gray-700">
+    <nav class="hidden md:flex md:gap-x-6 md:text-sm md:font-semibold md:leading-6 md:text-gray-700">
       <a class="cursor-pointer" hx-get="{% url 'contact-us' %}" hx-target="body" hx-push-url="true">ارتباط با ما</a>
       {% if user.is_authenticated %}
         <a class="cursor-pointer" hx-get="{% url 'home' %}" hx-target="body" hx-push-url="true">خانه</a>
         <a class="cursor-pointer" hx-get="{% url 'forum' 'test' %}" hx-target="body" hx-push-url="true">فروم</a>
+        {% if user.user_type == 'support' %}
+          <a class="cursor-pointer" hx-get="{% url 'ticket' %}" hx-target="body" hx-push-url="true">تیکت</a>
+        {% endif %}
       {% else %}
         <a class="cursor-pointer" hx-get="{% url 'login' %}" hx-target="body" hx-push-url="true">ورود</a>
         <a class="cursor-pointer" hx-get="{% url 'register' %}" hx-target="body" hx-push-url="true">ثبت نام</a>

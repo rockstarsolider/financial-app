@@ -16,6 +16,7 @@ def notify_users_on_announcement(sender, instance, created, **kwargs):
             'text': instance.text,
             'persian_date': instance.persian_date,
             'pk': instance.pk,
+            'target_user': instance.target_user
         }  
         async_to_sync(channel_layer.group_send)(group_name, event)
 

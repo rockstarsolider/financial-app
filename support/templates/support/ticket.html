@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <form hx-post="{% url 'ticket' %}" enctype="multipart/form-data" hx-target="body" class='pt-28 flex flex-col justify-center items-center'>
+        <h2 class='font-medium text-xl'>ثبت تیکت</h2>
+        <div class="form-control mb-2 w-96">
+            {{ form.title|add_label_class:'label' }}
+            {% render_field form.title class='input input-md input-bordered' %}
+        </div>
+        <div class="form-control mb-2 w-96">
+            {{ form.description|add_label_class:'label' }}
+            {% render_field form.description class='textarea textarea-bordered h-40' %}
+        </div>
+        <div class="form-control mb-2 w-96">
+            {{ form.priority|add_label_class:'label' }}
+            {% render_field form.priority class='select select-bordered' %}
+        </div>
+        <div class="form-control mb-2 w-96">
+            {{ form.category|add_label_class:'label' }}
+            {% render_field form.category class='select select-bordered' %}
+        </div>
+        <div class="form-control mb-2 w-96">
+            {{ form.attachment|add_label_class:'label' }}
+            {% render_field form.attachment class='file-input file-input-bordered' %}
+        </div>
+        <div class='w-96 pt-2'>
+            <button type='submit' class='btn btn-primary'>ثبت تیکت</button>
+        </div>
+    </form>
+
+    {% include 'partial/toast.html' %} 
+
+{% endblock %}
