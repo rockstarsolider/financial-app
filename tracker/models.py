@@ -1,8 +1,10 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.core.validators import MaxValueValidator
-from custom_translate.templatetags.persian_calendar_convertor import convert_to_persian_calendar, format_persian_date, format_persian_datetime, convert_to_persian_calendar_date
+from custom_translate.templatetags.persian_calendar_convertor import format_persian_date, convert_to_persian_calendar_date
 from .managers import TransactionQuerySet
+from django.utils.translation import gettext_lazy as _
+from parler.models import TranslatableModel, TranslatedFields
 
 class CustomUserManager(BaseUserManager):  
     def create_user(self, email, password=None, **extra_fields):  
@@ -42,8 +44,10 @@ class CustomUser(AbstractUser):
     def persian_date_joined(self):
         return format_persian_date(convert_to_persian_calendar_date(self.date_joined))
 
-class Category(models.Model):
-    name = models.CharField(max_length=15, unique=True)
+class Category(TranslatableModel):
+    translations = TranslatedFields(
+        name = models.CharField(_('name'), max_length=15, unique=True,),
+    )
     def __str__(self):
         return self.name
     

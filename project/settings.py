@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -55,18 +56,20 @@ INSTALLED_APPS = [
     'import_export',
     'channels',
     'django_cleanup.apps.CleanupConfig',
+    'rosetta',
+    'parler', 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.locale.LocaleMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
 ]
 
@@ -124,7 +127,22 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'fa-ir'
+LANGUAGE_CODE = 'fa'
+
+LANGUAGES = [
+    ('fa', _('Persian')),
+    ('en', _('English')),
+]
+
+PARLER_LANGUAGES = {
+    None : (
+        {'code': 'fa',},
+        {'code': 'en',},
+    ),
+    'default': {
+        'fallbacks': ['fa'],
+    }
+}
 
 TIME_ZONE = 'Asia/Tehran'
 
@@ -176,3 +194,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale')
+]

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import CustomUser, Category, Transaction
-import django_jalali.admin as jadmin
+from parler.admin import TranslatableAdmin
 
 # Register your models here.
 class TransactionAdmin(admin.ModelAdmin):
@@ -9,8 +9,13 @@ class TransactionAdmin(admin.ModelAdmin):
     list_filter = ['user', 'date', 'type', 'category']
     
 
-class CategoryAdmin(admin.ModelAdmin):
-    search_fields = ['name',]
+class CategoryAdmin(TranslatableAdmin):
+    list_display = ['name']
+    fieldsets = (
+        (None, {
+            'fields': ('name',),
+        }),
+    )
 
 class CustomUserAdmin(admin.ModelAdmin):
     list_display = ['email', 'first_name', 'last_name', 'date_joined']

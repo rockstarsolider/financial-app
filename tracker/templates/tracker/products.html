@@ -1,0 +1,150 @@
+{% load static tailwind_tags %}
+
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block head_title %}
+        Financial App
+        {% endblock %}
+    </title>
+    {% tailwind_css %}
+</head>
+
+<div dir="rtl" class="px-2 md:px-8 2xl:px-[10%]">
+    <header class="flex justify-between items-center py-2">
+        <!-- Search input -->
+        <label class="input input-bordered items-center gap-2 w-96 hidden lg:flex">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-5 w-5 opacity-70">
+                <path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" />
+            </svg>
+            <input type="text" class="grow focus:ring-0 border-none"  placeholder="جستجو" />
+        </label>
+
+        <!-- Only visible on mobile -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-6 w-6 opacity-70 block lg:hidden mr-2 cursor-pointer">
+            <path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" />
+        </svg>
+
+        <!-- Auth and shopping cart -->
+        <div class="flex gap-2 justify-center items-center">
+            <button class="btn btn-outline ">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                </svg> 
+                ورود | ثبت نام                  
+            </button>
+            <div class="border-r border-gray-500 h-8 ml-2"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 cursor-pointer">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+            </svg>              
+        </div>
+    </header>
+    
+    <!-- Second Header -->
+    <div class="py-2 justify-start items-center hidden lg:flex gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 cursor-pointer">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        <p class=" border-b border-white hover:border-primary cursor-pointer">دسته بندی کالاها</p> 
+        <div class="border-r border-gray-500 h-6 mx-2 cursor-pointer"></div>        
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-4 cursor-pointer text-gray-500">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.99 14.993 6-6m6 3.001c0 1.268-.63 2.39-1.593 3.069a3.746 3.746 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043 3.745 3.745 0 0 1-3.068 1.593c-1.268 0-2.39-.63-3.068-1.593a3.745 3.745 0 0 1-3.296-1.043 3.746 3.746 0 0 1-1.043-3.297 3.746 3.746 0 0 1-1.593-3.068c0-1.268.63-2.39 1.593-3.068a3.746 3.746 0 0 1 1.043-3.297 3.745 3.745 0 0 1 3.296-1.042 3.745 3.745 0 0 1 3.068-1.594c1.268 0 2.39.63 3.068 1.593a3.745 3.745 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.297 3.746 3.746 0 0 1 1.593 3.068ZM9.74 9.743h.008v.007H9.74v-.007Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+        </svg> 
+        <p class="text-gray-500 cursor-pointer border-b border-white hover:border-primary">تخفیف ها</p>  
+        <p class="mr-4 text-gray-500 cursor-pointer border-b border-white hover:border-primary">سوالی دارید؟</p>         
+    </div>
+    <div class=" border-b border-gray-300"></div>
+
+    <h2 class="mt-5 text-lg font-medium grid">تیشرت مردانه</h2>
+    <div class="flex flex-col lg:flex-row mt-4 gap-6">
+        <!-- Filters section -->
+        <div class="p-3 border border-gray-300 rounded-md w-full lg:w-1/4">
+            <h3 class="font-medium text-gray-700">فیلتر ها</h3>
+            <select class="select w-full max-w-xs mt-4">
+                <option disabled selected>رنگ</option>
+                <option>سفید</option>
+                <option>قرمز</option>
+                <option>مشکی</option>
+            </select>
+            <select class="select w-full max-w-xs mt-2">
+                <option disabled selected>اندازه</option>
+                <option>XL</option>
+                <option>2XL</option>
+            </select>
+            <div class="form-control pr-3 mt-2">
+                <label class="label cursor-pointer flex justify-between">
+                    <span class="label-text">فقط کالاهای موجود</span>
+                    <input type="checkbox" class="toggle toggle-primary" />
+                </label>
+            </div>
+            <div class="pr-4 text-sm mt-3">
+                <p>محدوده قیمت</p>
+                <label class="input input-bordered flex items-center gap-2 mt-2" >
+                    از
+                    <input type="text" class="grow focus:ring-0 border-none" placeholder="تومان" />
+                </label>
+                <label class="input input-bordered flex items-center gap-2 mt-2" >
+                    تا
+                    <input type="text" class="grow focus:ring-0 border-none" placeholder="تومان" />
+                </label>
+            </div>
+            <select class="select w-full max-w-xs mt-2">
+                <option disabled selected>نوع یقه</option>
+                <option>ایستاده</option>
+                <option>برگردان</option>
+            </select>
+            <select class="select w-full max-w-xs mt-2">
+                <option disabled selected>نوع آستین</option>
+                <option>کوتاه</option>
+                <option>بلند</option>
+            </select>
+            <select class="select w-full max-w-xs mt-2">
+                <option disabled selected>جنس</option>
+                <option>نخی</option>
+            </select>
+        </div>
+
+        <!-- Sort and products list -->
+        <div class="lg:w-3/4">
+            <div class="flex justify-start items-center gap-4 border-b border-gray-300 pb-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0-3.75-3.75M17.25 21 21 17.25" />
+                </svg> 
+                <p class=" text-sm">مرتب سازی:</p>
+                <a class="font-normal text-primary cursor-pointer text-sm">جدیدترین</a>                 
+                <a class="font-normal text-gray-500 cursor-pointer text-sm">ارزان ترین</a>                 
+                <a class="font-normal text-gray-500 cursor-pointer text-sm">گران ترین</a>                 
+                <a class="font-normal text-gray-500 cursor-pointer text-sm">محبوب ترین</a>                 
+            </div>
+
+            <div class="flex-col lg:flex-row justify-start items-start xl:grid xl:grid-cols-3">
+                <!-- Product -->
+                <div class="w-full lg:w-64 flex lg:flex-col mt-4 pl-2">
+                    <img class="p-3 size-32 lg:size-64 rounded-3xl" src="https://dkstatics-public.digikala.com/digikala-products/35eb9a7a204e2e6cf6558c27d47697fd2e6106ee_1696265633.jpg?x-oss-process=image/resize,m_lfit,h_300,w_300/format,webp/quality,q_80"/>
+                    <div class="w-full flex flex-col justify-between pb-3">  
+                        <p class="text-sm mt-4">تی شرت مردانه باینت مدل 3-698 رنگ سبز</p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="badge badge-primary">25%</div>
+                            <p class="font-medium text-base text-gray-700">399,000 تومان</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Product -->
+                <div class="w-full lg:w-64 flex lg:flex-col mt-4 pl-2">
+                    <img class="p-3 size-32 lg:size-64 rounded-3xl" src="https://dkstatics-public.digikala.com/digikala-products/9b28e66f5007845ad0413c4534989f7d3a82da76_1689572614.jpg?x-oss-process=image/resize,m_lfit,h_300,w_300/format,webp/quality,q_80"/>
+                    <div class="w-full flex flex-col justify-between pb-3">
+                        <p class="text-sm mt-4">تی شرت آستین بلند مردانه باینت </p>
+                        <div class="flex justify-between items-center mt-2">
+                            <div class="badge badge-primary">25%</div>
+                            <p class="font-medium text-base text-gray-700">399,000 تومان</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</html>
